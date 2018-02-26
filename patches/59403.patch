@@ -1,0 +1,13 @@
+diff --git a/cluster/update-storage-objects.sh b/cluster/update-storage-objects.sh
+index 364c1d7..5cdc954 100755
+--- a/cluster/update-storage-objects.sh
++++ b/cluster/update-storage-objects.sh
+@@ -34,7 +34,7 @@ KUBECTL="${KUBE_OUTPUT_HOSTBIN}/kubectl"
+ # TODO: Get this list of resources from server once
+ # http://issue.k8s.io/2057 is fixed.
+ declare -a resources=(
+-    "endpoints"
++    # "endpoints"
+     "events"
+     "limitranges"
+     "namespaces"

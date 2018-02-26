@@ -1,0 +1,251 @@
+
+# ci/pipeline.yml
+#
+# DO NOT MAKE CHANGES TO THIS FILE. Instead, modify ci/pipeline.yml.erb and
+# make ci/pipeline.yml.
+#
+# Updated: 2018-02-26T14:04:24+09:00
+#
+resource_types:
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+- name: file-url
+  type: docker-image
+  source:
+    repository: pivotalservices/concourse-curl-resource
+    tag: latest
+
+resources:
+- name: debian-base-amd64
+  type: docker-image
+  source:
+    repository: k8s.gcr.io/debian-base-amd64
+    tag: "0.3"
+- name: update-storage-objects
+  type: git
+  source:
+    uri: git://github.com/zlabjp/update-storage-objects.git
+    branch: master
+- name: notify
+  type: slack-notification
+  source:
+    url: ((slack-url))
+
+- name: update-storage-objects-image-1.7
+  type: docker-image
+  source:
+    repository: zlabjp/update-storage-objects
+    tag: 1.7
+    username: ((docker-username))
+    password: ((docker-password))
+
+
+- name: update-storage-objects-image-1.8
+  type: docker-image
+  source:
+    repository: zlabjp/update-storage-objects
+    tag: 1.8
+    username: ((docker-username))
+    password: ((docker-password))
+
+
+- name: update-storage-objects-image-1.9
+  type: docker-image
+  source:
+    repository: zlabjp/update-storage-objects
+    tag: 1.9
+    username: ((docker-username))
+    password: ((docker-password))
+
+
+- name: update-storage-objects-image-latest
+  type: docker-image
+  source:
+    repository: zlabjp/update-storage-objects
+    tag: latest
+    username: ((docker-username))
+    password: ((docker-password))
+
+
+
+- name: stable-1.7
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/stable-1.7.txt
+    filename: version
+
+- name: stable-1.8
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/stable-1.8.txt
+    filename: version
+
+- name: stable-1.9
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/stable-1.9.txt
+    filename: version
+
+- name: latest
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/latest.txt
+    filename: version
+
+
+jobs:
+
+- name: build-update-storage-objects-image-1.7
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: update-storage-objects
+        trigger: true
+      - get: debian-base-amd64
+        params: {save: true}
+        trigger: true
+      - get: stable-1.7
+        trigger: true
+    - task: create-build-args-file
+      file: update-storage-objects/ci/tasks/create-build-args-file.yml
+      input_mapping: {version: stable-1.7}
+    - put: update-storage-objects-image-1.7
+      params:
+        build: update-storage-objects
+        load_base: debian-base-amd64
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        channel: ((slack-success-channel))
+        username: concourse / update-storage-objects-image-1.7
+        icon_emoji: ":dancing-penguin:"
+        text: |
+          Success! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        channel: ((slack-failure-channel))
+        username: concourse / update-storage-objects-image-1.7
+        icon_emoji: ":rage:"
+        text: |
+          Failure! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: build-update-storage-objects-image-1.8
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: update-storage-objects
+        trigger: true
+      - get: debian-base-amd64
+        params: {save: true}
+        trigger: true
+      - get: stable-1.8
+        trigger: true
+    - task: create-build-args-file
+      file: update-storage-objects/ci/tasks/create-build-args-file.yml
+      input_mapping: {version: stable-1.8}
+    - put: update-storage-objects-image-1.8
+      params:
+        build: update-storage-objects
+        load_base: debian-base-amd64
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        channel: ((slack-success-channel))
+        username: concourse / update-storage-objects-image-1.8
+        icon_emoji: ":dancing-penguin:"
+        text: |
+          Success! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        channel: ((slack-failure-channel))
+        username: concourse / update-storage-objects-image-1.8
+        icon_emoji: ":rage:"
+        text: |
+          Failure! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: build-update-storage-objects-image-1.9
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: update-storage-objects
+        trigger: true
+      - get: debian-base-amd64
+        params: {save: true}
+        trigger: true
+      - get: stable-1.9
+        trigger: true
+    - task: create-build-args-file
+      file: update-storage-objects/ci/tasks/create-build-args-file.yml
+      input_mapping: {version: stable-1.9}
+    - put: update-storage-objects-image-1.9
+      params:
+        build: update-storage-objects
+        load_base: debian-base-amd64
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        channel: ((slack-success-channel))
+        username: concourse / update-storage-objects-image-1.9
+        icon_emoji: ":dancing-penguin:"
+        text: |
+          Success! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        channel: ((slack-failure-channel))
+        username: concourse / update-storage-objects-image-1.9
+        icon_emoji: ":rage:"
+        text: |
+          Failure! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: build-update-storage-objects-image-latest
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: update-storage-objects
+        trigger: true
+      - get: debian-base-amd64
+        params: {save: true}
+        trigger: true
+      - get: latest
+        trigger: true
+    - task: create-build-args-file
+      file: update-storage-objects/ci/tasks/create-build-args-file.yml
+      input_mapping: {version: latest}
+    - put: update-storage-objects-image-latest
+      params:
+        build: update-storage-objects
+        load_base: debian-base-amd64
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        channel: ((slack-success-channel))
+        username: concourse / update-storage-objects-image-latest
+        icon_emoji: ":dancing-penguin:"
+        text: |
+          Success! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        channel: ((slack-failure-channel))
+        username: concourse / update-storage-objects-image-latest
+        icon_emoji: ":rage:"
+        text: |
+          Failure! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
