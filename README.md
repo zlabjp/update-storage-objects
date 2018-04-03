@@ -1,5 +1,7 @@
 # Kubernetes: update-storage-objects Docker Image
 
+[![Build Status](https://travis-ci.org/zlabjp/update-storage-objects.svg?branch=master)](https://travis-ci.org/zlabjp/update-storage-objects)
+
 The easiest way to run `cluster/update-storage-objects.sh`.
 
 ## What is `cluster/update-storage-objects.sh`?
