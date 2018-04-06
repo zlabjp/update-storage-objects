@@ -26,23 +26,23 @@
 
 [[constraint]]
   name = "k8s.io/kubernetes"
-  version = "v1.10.0-beta.4"
+  version = "v1.10.0"
 
 [[override]]
   name = "k8s.io/client-go"
-  version = "kubernetes-1.10.0-beta.4"
+  version = "kubernetes-1.10.0"
 
 [[override]]
   name = "k8s.io/api"
-  version = "kubernetes-1.10.0-beta.4"
+  version = "kubernetes-1.10.0"
 
 [[override]]
   name = "k8s.io/apimachinery"
-  version = "kubernetes-1.10.0-beta.4"
+  version = "kubernetes-1.10.0"
 
 [[override]]
   name = "k8s.io/apiserver"
-  version = "kubernetes-1.10.0-beta.4"
+  version = "kubernetes-1.10.0"
 
 # Fix vendor/k8s.io/kubernetes/pkg/util/parsers/parsers.go:36:16: undefined: reference.ParseNormalizedNamed
 [[override]]
