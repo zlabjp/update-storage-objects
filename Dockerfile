@@ -41,14 +41,18 @@ RUN set -ex && \
 
 COPY entrypoint.sh /
 
-COPY --from=0 /kubectl kubernetes/_output/local/bin/linux/amd64/
-COPY --from=0 /dumb-init /
+COPY --from=0 /kubectl /usr/local/bin/
+COPY --from=0 /dumb-init /usr/local/bin/
 COPY --from=0 /kubernetes/cluster/update-storage-objects.sh kubernetes/cluster/
 COPY --from=0 /kubernetes/cluster/lib kubernetes/cluster/lib/
 COPY --from=0 /kubernetes/hack/lib kubernetes/hack/lib/
 COPY --from=1 /kput /usr/local/bin/
 
+RUN set -ex && \
+    mkdir -p /kubernetes/_output/local/bin/linux/amd64 && \
+    ln -s /usr/local/bin/kubectl /kubernetes/_output/local/bin/linux/amd64/kubectl
+
 WORKDIR /kubernetes
 
-ENTRYPOINT ["/dumb-init", "/entrypoint.sh"]
+ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 CMD ["cluster/update-storage-objects.sh"]
