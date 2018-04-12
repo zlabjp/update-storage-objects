@@ -14,13 +14,7 @@ Steps to use that script to upgrade the cluster to a new version: https://kubern
 
 update-storage-objects is a container image which contains patched `cluster/update-storage-objects.sh` and `kubectl` command.
 
-There are images corresponding to each Kubernetes minor version:
-
-- `zlabjp/update-storage-objects:1.9` ([stable-1.9](https://storage.googleapis.com/kubernetes-release/release/stable-1.9.txt))
-- `zlabjp/update-storage-objects:1.8` ([stable-1.8](https://storage.googleapis.com/kubernetes-release/release/stable-1.8.txt))
-- `zlabjp/update-storage-objects:1.7` ([stable-1.7](https://storage.googleapis.com/kubernetes-release/release/stable-1.7.txt))
-
-**Note that the below patches have been applied to the `cluster/update-storage-objects.sh` in the above container images. Please see the details before using.**
+**Note that the below patches have been applied to the `cluster/update-storage-objects.sh` in the container image. Please see the details before using.**
 
 1. [`patches/59403.patch`](./patches/59403.patch): Remove `endpoints` resource from list of resources to be updated. (https://github.com/kubernetes/kubernetes/issues/59403)
 2. [`patches/60970.patch`](./patches/60970.patch): Use [`kput` command](./cmd/kput) for updating existing objects instead of `kubectl replace` command. (https://github.com/kubernetes/kubernetes/issues/60970)
@@ -32,13 +26,13 @@ There are images corresponding to each Kubernetes minor version:
 You can run this image in your local environment:
 
 ```
-docker run -v $HOME/.kube:/.kube -e KUBECONFIG=/.kube/config zlabjp/update-storage-objects:1.9
+docker run -v $HOME/.kube:/.kube -e KUBECONFIG=/.kube/config zlabjp/update-storage-objects:1.0.0
 ```
 
 You can also run this image from inside your cluster:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/zlabjp/update-storage-objects/master/deploy/update-storage-objects-1.9.yaml
+kubectl apply -f https://raw.githubusercontent.com/zlabjp/update-storage-objects/master/deploy/update-storage-objects.yaml
 ```
 
 ## License
