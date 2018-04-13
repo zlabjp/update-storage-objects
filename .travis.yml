@@ -8,7 +8,16 @@ services:
 sudo: required
 
 env:
-- KUBE_VERSION=v1.9.4 CHANGE_MINIKUBE_NONE_USER=true
+  global:
+  - DEPLOY_CONDITION=v1.10 # Don't forget to update here to latest kube minor version
+  - CHANGE_MINIKUBE_NONE_USER=true
+  - MINIKUBE_VERSION=v0.26.0
+  - MINIKUBE_ARGS="--vm-driver=none --bootstrapper=localkube --extra-config=apiserver.Authorization.Mode=RBAC"
+  matrix:
+  - KUBE_VERSION=v1.10.0
+  - KUBE_VERSION=v1.9.4
+  - KUBE_VERSION=v1.8.0
+  - KUBE_VERSION=v1.7.5
 
 script:
 - make docker-image
@@ -17,10 +26,20 @@ after_success:
 # Download kubectl, which is a requirement for using minikube.
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 # Download minikube.
-- curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
-- sudo minikube start --vm-driver=none --kubernetes-version=${KUBE_VERSION} --extra-config=apiserver.Authorization.Mode=RBAC
+- curl -Lo minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+- sudo minikube start --kubernetes-version=${KUBE_VERSION} ${MINIKUBE_ARGS}
 # Fix the kubectl context, as it's often stale.
-- minikube update-context
+- sudo minikube update-context
+# Prevent Permission denied
+- sudo chown -R ${USER} ${HOME}/.kube ${HOME}/.minikube
 # Wait for Kubernetes to be up and ready.
 - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
 - docker run -v ${HOME}/.kube:/.kube -v ${HOME}/.minikube:${HOME}/.minikube -e KUBECONFIG=/.kube/config zlabjp/update-storage-objects:latest
+
+deploy:
+  provider: script
+  script: DOCKER_TAG="${TRAVIS_TAG}" scripts/docker-push.sh
+  on:
+    branch: master
+    tags: true
+    condition: "$KUBE_VERSION =~ ^$DEPLOY_CONDITION"

@@ -1,6 +1,6 @@
 FROM k8s.gcr.io/debian-base-amd64:0.3
 
-ARG KUBE_VERSION=
+ARG KUBE_VERSION=v1.10.0
 ARG DUMB_INIT_VERSION=1.2.1
 
 COPY patches /patches
@@ -9,7 +9,6 @@ RUN set -ex && \
     apt-get update && \
     apt-get install -y curl git patch && \
     # Install kubectl command
-    [ -z "$KUBE_VERSION" ] && KUBE_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt) ||: && \
     curl -s -LO https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
     ./kubectl version --client && \
@@ -44,7 +43,6 @@ COPY entrypoint.sh /
 COPY --from=0 /kubectl /usr/local/bin/
 COPY --from=0 /dumb-init /usr/local/bin/
 COPY --from=0 /kubernetes/cluster/update-storage-objects.sh kubernetes/cluster/
-COPY --from=0 /kubernetes/cluster/lib kubernetes/cluster/lib/
 COPY --from=0 /kubernetes/hack/lib kubernetes/hack/lib/
 COPY --from=1 /kput /usr/local/bin/
 

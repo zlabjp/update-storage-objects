@@ -12,7 +12,7 @@ clean:
 DOCKER_IMAGE=zlabjp/update-storage-objects
 .PHONY: docker-image
 docker-image:
-	@docker build --build-arg=KUBE_VERSION=$(KUBE_VERSION) -t $(DOCKER_IMAGE) .
+	@docker build -t $(DOCKER_IMAGE) .
 
 CONCOURSE_PROJECT=update-storage-objects
 .PHONY: set-pipeline
