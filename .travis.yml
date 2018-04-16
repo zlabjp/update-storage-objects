@@ -38,7 +38,7 @@ after_success:
 
 deploy:
   provider: script
-  script: DOCKER_TAG="${TRAVIS_TAG}" scripts/docker-push.sh
+  script: echo "${DOCKER_PASSWORD}" | docker login -u="${DOCKER_USERNAME}" --password-stdin && DOCKER_TAG="${TRAVIS_TAG}" scripts/docker-push.sh
   on:
     branch: master
     tags: true
