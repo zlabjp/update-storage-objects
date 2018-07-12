@@ -19,7 +19,6 @@ update-storage-objects is a container image which contains patched `cluster/upda
 1. [`patches/59403.patch`](./patches/59403.patch): Remove `endpoints` resource from list of resources to be updated. (https://github.com/kubernetes/kubernetes/issues/59403)
 2. [`patches/60970.patch`](./patches/60970.patch): Use [`kput` command](./cmd/kput) for updating existing objects instead of `kubectl replace` command. (https://github.com/kubernetes/kubernetes/issues/60970)
     - `kput` command just updates existing objects. Even if the `kubectl.kubernetes.io/last-applied-configuration` annotation existed, `kput` command keeps it as it is.
-3. [`patches/61528.patch`]( ./patches/61528.patch) : Ignore objects if it failed to fetch them. (https://github.com/kubernetes/kubernetes/pull/61528)
 
 ## How to use this image
 
