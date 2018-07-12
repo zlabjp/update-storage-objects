@@ -22,80 +22,132 @@ file that was distributed with this source code.
 package main
 
 import (
-	goflag "flag"
+	"flag"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/spf13/cobra"
-	"k8s.io/apiserver/pkg/util/flag"
+	"k8s.io/apimachinery/pkg/runtime"
+	utilflag "k8s.io/apiserver/pkg/util/flag"
 	cmdutil "k8s.io/kubernetes/pkg/kubectl/cmd/util"
-	"k8s.io/kubernetes/pkg/kubectl/resource"
+	"k8s.io/kubernetes/pkg/kubectl/genericclioptions"
+	"k8s.io/kubernetes/pkg/kubectl/genericclioptions/resource"
 	"k8s.io/kubernetes/pkg/kubectl/util/logs"
+	"k8s.io/kubernetes/pkg/kubectl/validation"
+
 	// Import to initialize client auth plugins.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
-func main() {
-	f := cmdutil.NewFactory(nil)
-	options := &resource.FilenameOptions{}
+type KputOptions struct {
+	PrintFlags    *genericclioptions.PrintFlags
+	FileNameFlags *genericclioptions.FileNameFlags
+
+	FilenameOptions resource.FilenameOptions
+
+	PrintObj func(obj runtime.Object) error
+
+	validate bool
+
+	Schema      validation.Schema
+	Builder     func() *resource.Builder
+	BuilderArgs []string
+
+	Namespace        string
+	EnforceNamespace bool
+
+	genericclioptions.IOStreams
+}
+
+func NewKputOptions(streams genericclioptions.IOStreams) *KputOptions {
+	outputFormat := ""
+	usage := "to use to put the resource."
+
+	filenames := []string{}
+	recursive := false
+
+	return &KputOptions{
+		FileNameFlags: &genericclioptions.FileNameFlags{Usage: usage, Filenames: &filenames, Recursive: &recursive},
+		PrintFlags: &genericclioptions.PrintFlags{
+			OutputFormat:   &outputFormat,
+			NamePrintFlags: genericclioptions.NewNamePrintFlags("putting"),
+		},
+
+		IOStreams: streams,
+	}
+}
+
+func NewCmdKput(f cmdutil.Factory, streams genericclioptions.IOStreams) *cobra.Command {
+	o := NewKputOptions(streams)
 
 	cmd := &cobra.Command{
 		Use: "kput -f FILENAME",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmdutil.CheckErr(cmdutil.ValidateOutputArgs(cmd))
-			err := run(f, os.Stdout, cmd, options)
-			cmdutil.CheckErr(err)
+			cmdutil.CheckErr(o.Complete(f, cmd, args))
+			cmdutil.CheckErr(o.Validate(cmd))
+			cmdutil.CheckErr(o.Run())
 		},
 	}
 
-	cmdutil.AddFilenameOptionFlags(cmd, options, "to use to put the resource.")
+	o.FileNameFlags.AddFlags(cmd.Flags())
+	o.PrintFlags.AddFlags(cmd)
+
+	cmd.MarkFlagRequired("filename")
 	cmdutil.AddValidateFlags(cmd)
-	cmdutil.AddOutputFlagsForMutation(cmd)
+	cmdutil.AddApplyAnnotationFlags(cmd)
 
-	f.BindFlags(cmd.Flags())
-	f.BindExternalFlags(cmd.Flags())
-
-	cmd.Flags().SetNormalizeFunc(flag.WordSepNormalizeFunc)
-	cmd.Flags().AddGoFlagSet(goflag.CommandLine)
-	// Workaround for this issue: https://github.com/kubernetes/kubernetes/issues/17162
-	goflag.CommandLine.Parse([]string{})
-
-	logs.InitLogs()
-	defer logs.FlushLogs()
-
-	if err := cmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
-	}
+	return cmd
 }
 
-func run(f cmdutil.Factory, out io.Writer, cmd *cobra.Command, options *resource.FilenameOptions) error {
-	schema, err := f.Validator(cmdutil.GetFlagBool(cmd, "validate"))
+func (o *KputOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []string) error {
+	var err error
+
+	o.validate = cmdutil.GetFlagBool(cmd, "validate")
+
+	printer, err := o.PrintFlags.ToPrinter()
+	if err != nil {
+		return err
+	}
+	o.PrintObj = func(obj runtime.Object) error {
+		return printer.PrintObj(obj, o.Out)
+	}
+
+	o.FilenameOptions = o.FileNameFlags.ToOptions()
+
+	schema, err := f.Validator(o.validate)
 	if err != nil {
 		return err
 	}
 
-	cmdNamespace, enforceNamespace, err := f.DefaultNamespace()
+	o.Schema = schema
+	o.Builder = f.NewBuilder
+	o.BuilderArgs = args
+
+	o.Namespace, o.EnforceNamespace, err = f.ToRawKubeConfigLoader().Namespace()
 	if err != nil {
 		return err
 	}
 
-	if cmdutil.IsFilenameSliceEmpty(options.Filenames) {
+	return nil
+}
+
+func (o *KputOptions) Validate(cmd *cobra.Command) error {
+	if cmdutil.IsFilenameSliceEmpty(o.FilenameOptions.Filenames) {
 		return cmdutil.UsageErrorf(cmd, "Must specify --filename to put")
 	}
 
-	shortOutput := cmdutil.GetFlagString(cmd, "output") == "name"
+	return nil
+}
 
-	r := f.NewBuilder().
+func (o *KputOptions) Run() error {
+	r := o.Builder().
 		Unstructured().
-		Schema(schema).
+		Schema(o.Schema).
 		ContinueOnError().
-		NamespaceParam(cmdNamespace).DefaultNamespace().
-		FilenameParam(enforceNamespace, options).
+		NamespaceParam(o.Namespace).DefaultNamespace().
+		FilenameParam(o.EnforceNamespace, &o.FilenameOptions).
 		Flatten().
 		Do()
-
 	if err := r.Err(); err != nil {
 		return err
 	}
@@ -111,8 +163,34 @@ func run(f cmdutil.Factory, out io.Writer, cmd *cobra.Command, options *resource
 		}
 
 		info.Refresh(obj, true)
-		cmdutil.PrintSuccess(shortOutput, out, info.Object, false, "put")
-
-		return nil
+		return o.PrintObj(info.Object)
 	})
+}
+
+func main() {
+	kubeConfigFlags := genericclioptions.NewConfigFlags()
+	matchVersionKubeConfigFlags := cmdutil.NewMatchVersionFlags(kubeConfigFlags)
+	f := cmdutil.NewFactory(matchVersionKubeConfigFlags)
+	streams := genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr}
+
+	cmd := NewCmdKput(f, streams)
+
+	flags := cmd.PersistentFlags()
+	flags.SetNormalizeFunc(utilflag.WarnWordSepNormalizeFunc) // Warn for "_" flags
+
+	// Normalize all flags that are coming from other packages or pre-configurations
+	// a.k.a. change all "_" to "-". e.g. glog package
+	flags.SetNormalizeFunc(utilflag.WordSepNormalizeFunc)
+
+	kubeConfigFlags.AddFlags(flags)
+	matchVersionKubeConfigFlags.AddFlags(cmd.PersistentFlags())
+	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
+
+	logs.InitLogs()
+	defer logs.FlushLogs()
+
+	if err := cmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
 }
