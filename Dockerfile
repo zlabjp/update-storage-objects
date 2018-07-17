@@ -1,6 +1,6 @@
 FROM k8s.gcr.io/debian-base-amd64:0.3
 
-ARG KUBE_VERSION=v1.10.0
+ARG KUBE_VERSION=v1.11.0
 ARG DUMB_INIT_VERSION=1.2.1
 
 COPY patches /patches
@@ -35,7 +35,7 @@ FROM k8s.gcr.io/debian-base-amd64:0.3
 
 RUN set -ex && \
     apt-get update && \
-    apt-get install -y bash && \
+    apt-get install -y bash jq gawk && \
     rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /
