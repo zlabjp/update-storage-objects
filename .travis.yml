@@ -9,12 +9,12 @@ sudo: required
 
 env:
   global:
-  - DEPLOY_CONDITION=v1.10 # Don't forget to update here to latest kube minor version
+  - DEPLOY_CONDITION=v1.11 # Don't forget to update here to latest kube minor version
   - CHANGE_MINIKUBE_NONE_USER=true
-  - MINIKUBE_VERSION=v0.26.0
+  - MINIKUBE_VERSION=v0.28.1
   - MINIKUBE_ARGS="--vm-driver=none --bootstrapper=localkube --extra-config=apiserver.Authorization.Mode=RBAC"
   matrix:
-  # - KUBE_VERSION=v1.11.0
+  - KUBE_VERSION=v1.11.0
   - KUBE_VERSION=v1.10.0
   - KUBE_VERSION=v1.9.4
   - KUBE_VERSION=v1.8.0
