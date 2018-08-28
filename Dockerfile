@@ -1,7 +1,7 @@
 FROM k8s.gcr.io/debian-base-amd64:0.3.2
 
 ARG KUBE_VERSION=v1.11.0
-ARG DUMB_INIT_VERSION=1.2.1
+ARG DUMB_INIT_VERSION=1.2.2
 
 COPY patches /patches
 
