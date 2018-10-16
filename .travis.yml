@@ -14,6 +14,7 @@ env:
   - MINIKUBE_VERSION=v0.26.0
   - MINIKUBE_ARGS="--vm-driver=none --bootstrapper=localkube --extra-config=apiserver.Authorization.Mode=RBAC"
   matrix:
+  # - KUBE_VERSION=v1.12.1
   # - KUBE_VERSION=v1.11.0
   - KUBE_VERSION=v1.10.0
   - KUBE_VERSION=v1.9.4
