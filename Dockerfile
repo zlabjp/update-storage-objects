@@ -22,7 +22,7 @@ RUN set -ex && \
     git diff && \
     rm -rf /var/lib/apt/lists/*
 
-FROM golang:1.10
+FROM golang:1.11
 
 COPY . /go/src/app/
 

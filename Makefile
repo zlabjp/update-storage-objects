@@ -3,7 +3,7 @@ build: $(shell find cmd/kput -name '*.go') $(shell find vendor -name '*.go')
 
 .PHONY: build-image
 build-image:
-	@docker run -v $(shell pwd):/go/src/app -w /go/src/app golang:1.10 make build
+	@docker run -v $(shell pwd):/go/src/app -w /go/src/app golang:1.11 make build
 
 .PHONY: clean
 clean:
