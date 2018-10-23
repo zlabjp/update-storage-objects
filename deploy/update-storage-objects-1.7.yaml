@@ -28,5 +28,5 @@ spec:
       serviceAccountName: storage-objects-updater
       containers:
       - name: update-storage-objects
-        image: zlabjp/update-storage-objects:1.1.0
+        image: zlabjp/update-storage-objects:1.2.0
       restartPolicy: Never
