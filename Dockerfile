@@ -1,4 +1,4 @@
-FROM k8s.gcr.io/debian-base-amd64:0.3.2
+FROM k8s.gcr.io/debian-base-amd64:0.4.0
 
 ARG KUBE_VERSION=v1.12.1
 ARG DUMB_INIT_VERSION=1.2.2
@@ -31,7 +31,7 @@ RUN set -ex && \
     make build && \
     mv bin/kput /kput
 
-FROM k8s.gcr.io/debian-base-amd64:0.3
+FROM k8s.gcr.io/debian-base-amd64:0.4.0
 
 RUN set -ex && \
     apt-get update && \
