@@ -1,6 +1,6 @@
 FROM k8s.gcr.io/debian-base-amd64:0.4.0
 
-ARG KUBE_VERSION=v1.12.1
+ARG KUBE_VERSION=v1.13.1
 ARG DUMB_INIT_VERSION=1.2.2
 
 COPY patches /patches
@@ -22,7 +22,7 @@ RUN set -ex && \
     git diff && \
     rm -rf /var/lib/apt/lists/*
 
-FROM golang:1.10
+FROM golang:1.11
 
 COPY . /go/src/app/
 
