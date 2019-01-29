@@ -25,7 +25,7 @@ update-storage-objects is a container image which contains patched `cluster/upda
 You can run this image in your local environment:
 
 ```
-docker run -v $HOME/.kube:/.kube -e KUBECONFIG=/.kube/config zlabjp/update-storage-objects:v1.3.0
+docker run -v $HOME/.kube:/.kube -e KUBECONFIG=/.kube/config zlabjp/update-storage-objects:1.3.0
 ```
 
 You can also run this image from inside your cluster:
