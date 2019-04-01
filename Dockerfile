@@ -1,6 +1,8 @@
-FROM k8s.gcr.io/debian-base-amd64:0.4.0
+ARG DEBIAN_BASE_VERSION=1.0.0
 
-ARG KUBE_VERSION=v1.13.1
+FROM k8s.gcr.io/debian-base-amd64:${DEBIAN_BASE_VERSION}
+
+ARG KUBE_VERSION=v1.14.0
 ARG DUMB_INIT_VERSION=1.2.2
 
 COPY patches /patches
@@ -22,7 +24,7 @@ RUN set -ex && \
     git diff && \
     rm -rf /var/lib/apt/lists/*
 
-FROM golang:1.11
+FROM golang:1.12
 
 COPY . /go/src/app/
 
@@ -31,7 +33,7 @@ RUN set -ex && \
     make build && \
     mv bin/kput /kput
 
-FROM k8s.gcr.io/debian-base-amd64:0.4.0
+FROM k8s.gcr.io/debian-base-amd64:${DEBIAN_BASE_VERSION}
 
 RUN set -ex && \
     apt-get update && \
