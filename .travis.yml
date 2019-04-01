@@ -1,17 +1,17 @@
 language: go
 
 go:
-- "1.11.x"
+- "1.12.x"
 
 services:
 - docker
 
 env:
   global:
-  - DEPLOY_CONDITION=v1.12.3 # Don't forget to update here to latest kube minor version
+  - DEPLOY_CONDITION=v1.14.0 # Don't forget to update here to latest kube minor version
   matrix:
-  - KUBE_VERSION=v1.12.3
-  - KUBE_VERSION=v1.11.3
+  - KUBE_VERSION=v1.14.0
+  - KUBE_VERSION=v1.13.3
 
 script:
 - make docker-image

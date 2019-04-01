@@ -28,9 +28,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/runtime"
-	utilflag "k8s.io/apiserver/pkg/util/flag"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/cli-runtime/pkg/genericclioptions/resource"
+	"k8s.io/cli-runtime/pkg/resource"
+	cliflag "k8s.io/component-base/cli/flag"
 	cmdutil "k8s.io/kubernetes/pkg/kubectl/cmd/util"
 	"k8s.io/kubernetes/pkg/kubectl/util/logs"
 	"k8s.io/kubernetes/pkg/kubectl/validation"
@@ -132,7 +132,7 @@ func (o *KputOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []str
 }
 
 func (o *KputOptions) Validate(cmd *cobra.Command) error {
-	if cmdutil.IsFilenameSliceEmpty(o.FilenameOptions.Filenames) {
+	if cmdutil.IsFilenameSliceEmpty(o.FilenameOptions.Filenames, "") {
 		return cmdutil.UsageErrorf(cmd, "Must specify --filename to put")
 	}
 
@@ -168,7 +168,7 @@ func (o *KputOptions) Run() error {
 }
 
 func main() {
-	kubeConfigFlags := genericclioptions.NewConfigFlags()
+	kubeConfigFlags := genericclioptions.NewConfigFlags(true)
 	matchVersionKubeConfigFlags := cmdutil.NewMatchVersionFlags(kubeConfigFlags)
 	f := cmdutil.NewFactory(matchVersionKubeConfigFlags)
 	streams := genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr}
@@ -176,11 +176,11 @@ func main() {
 	cmd := NewCmdKput(f, streams)
 
 	flags := cmd.PersistentFlags()
-	flags.SetNormalizeFunc(utilflag.WarnWordSepNormalizeFunc) // Warn for "_" flags
+	flags.SetNormalizeFunc(cliflag.WarnWordSepNormalizeFunc) // Warn for "_" flags
 
 	// Normalize all flags that are coming from other packages or pre-configurations
 	// a.k.a. change all "_" to "-". e.g. glog package
-	flags.SetNormalizeFunc(utilflag.WordSepNormalizeFunc)
+	flags.SetNormalizeFunc(cliflag.WordSepNormalizeFunc)
 
 	kubeConfigFlags.AddFlags(flags)
 	matchVersionKubeConfigFlags.AddFlags(cmd.PersistentFlags())
