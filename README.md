@@ -19,6 +19,7 @@ update-storage-objects is a container image which contains patched `cluster/upda
 1. [`patches/59403.patch`](./patches/59403.patch): Remove `endpoints` resource from list of resources to be updated. (https://github.com/kubernetes/kubernetes/issues/59403)
 2. [`patches/60970.patch`](./patches/60970.patch): Use [`kput` command](./cmd/kput) for updating existing objects instead of `kubectl replace` command. (https://github.com/kubernetes/kubernetes/issues/60970)
     - `kput` command just updates existing objects. Even if the `kubectl.kubernetes.io/last-applied-configuration` annotation existed, `kput` command keeps it as it is.
+3. [`patches/add-skip-error-opition.patch`](./patches/add-skip-error-opition.patch): Add a option to skip errors in case of failing get or replace objects. This feature is available when set `SKIP_UPDATE_OBJECT_ERROR` environment with `true`.
 
 ## How to use this image
 

@@ -1,0 +1,43 @@
+diff --git a/cluster/update-storage-objects.sh b/cluster/update-storage-objects.sh
+index d1f8affa13..5646abd776 100755
+--- a/cluster/update-storage-objects.sh
++++ b/cluster/update-storage-objects.sh
+@@ -25,6 +25,8 @@ set -o errexit
+ set -o nounset
+ set -o pipefail
+ 
++SKIP_UPDATE_OBJECT_ERROR=${SKIP_UPDATE_OBJECT_ERROR:-}
++
+ KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+ source "${KUBE_ROOT}/hack/lib/init.sh"
+ 
+@@ -65,6 +67,7 @@ then
+ fi
+ 
+ all_failed=1
++partially_failed=0
+ 
+ for resource in "${resources[@]}"
+ do
+@@ -118,7 +121,8 @@ do
+       if [[ "${success}" -eq 0 ]]
+       then
+         echo "Error: failed to update ${resource}/${instance} in ${namespace} namespace after 5 tries"
+-        exit 1
++        [[ ${SKIP_UPDATE_OBJECT_ERROR} =~ ^(t|true|TRUE|y|yes|YES)$ ]] || exit 1
++        partially_failed=1
+       fi
+     done
+     if [[ "${resource}" == "namespaces" ]] || [[ "${resource}" == "nodes" ]]
+@@ -130,6 +134,11 @@ do
+   done
+ done
+ 
++if  [[ $partially_failed == 1 ]]; then
++  echo "kubectl get failed for part of resources"
++  exit 1
++fi
++
+ if [[ "${all_failed}" -eq 1 ]]; then
+   echo "kubectl get failed for all resources"
+   exit 1
