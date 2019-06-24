@@ -608,7 +608,7 @@
   version = "v2.2.1"
 
 [[projects]]
-  digest = "1:7b8963a5f5bb45d0b3c18806459c02b2284a4267c8c7e9444606e95b95b51fe3"
+  digest = "1:6d0aa77d566a58435e633a5cd9cea7492f5f8fb330e54f5c643478473c2fc595"
   name = "k8s.io/api"
   packages = [
     "admission/v1beta1",
@@ -651,11 +651,11 @@
     "storage/v1beta1",
   ]
   pruneopts = "UT"
-  revision = "40a48860b5abbba9aa891b02b32da429b08d96a0"
-  version = "kubernetes-1.14.0"
+  revision = "7cf5895f2711098d7d9527db0a4a49fb0dff7de2"
+  version = "kubernetes-1.15.0"
 
 [[projects]]
-  digest = "1:670cfd4b04e746ae50705ab193525e1c19e05a239bd9545ab9ed8d0830662f8e"
+  digest = "1:8a1c0060f0f71b703ab4c0cbf3407d3a860fce90c2f820217147663b5678a217"
   name = "k8s.io/apimachinery"
   packages = [
     "pkg/api/equality",
@@ -707,8 +707,8 @@
     "third_party/forked/golang/reflect",
   ]
   pruneopts = "UT"
-  revision = "d7deff9243b165ee192f5551710ea4285dcfd615"
-  version = "kubernetes-1.14.0"
+  revision = "1799e75a07195de9460b8ef7300883499f12127b"
+  version = "kubernetes-1.15.0"
 
 [[projects]]
   branch = "master"
@@ -732,7 +732,7 @@
   revision = "44a48934c135b31e4f1c0d12e91d384e1cb2304c"
 
 [[projects]]
-  digest = "1:7260e16746c394f01dd116a06e590c316647b668e2a4425d17a19ae149efd365"
+  digest = "1:d328ca27a470d74394bb7eebbe9556af082155b4eea50e9adea6133d1e3621e8"
   name = "k8s.io/client-go"
   packages = [
     "discovery",
@@ -817,16 +817,16 @@
     "util/keyutil",
   ]
   pruneopts = "UT"
-  revision = "6ee68ca5fd8355d024d02f9db0b3b667e8357a0f"
-  version = "kubernetes-1.14.0"
+  revision = "78d2af792babf2dd937ba2e2a8d99c753a5eda89"
+  version = "kubernetes-1.15.0"
 
 [[projects]]
-  branch = "release-1.14"
-  digest = "1:dc54d24e166e75a89145883b6080306f5684db2e8ab7a068625f010dee604c6e"
+  branch = "release-1.15"
+  digest = "1:96a5161fb08cfac0a30769e5e499a4db4c0041a7cf57945843167d966e8f1d98"
   name = "k8s.io/component-base"
   packages = ["cli/flag"]
   pruneopts = "UT"
-  revision = "4a91899592f42b2f5859587cc5a676a5b94d2ee3"
+  revision = "44ae6873ad4b0e7e6b7d93706255b6bd817a8717"
 
 [[projects]]
   digest = "1:e2999bf1bb6eddc2a6aa03fe5e6629120a53088926520ca3b4765f77d7ff7eab"
@@ -849,23 +849,23 @@
   revision = "9dfdf9be683f61f82cda12362c44c784e0778b56"
 
 [[projects]]
-  branch = "release-1.14"
-  digest = "1:a025851c5b3b59aaa0d3973681f062837ec1746427f6e3f5ba14e67d5eab5849"
+  branch = "release-1.15"
+  digest = "1:722cef1b6289a2ba1fc27287cc8ad7754fa04932c1b9784b3c087c984c3254f1"
   name = "k8s.io/kubernetes"
   packages = [
     "pkg/kubectl/cmd/util",
     "pkg/kubectl/cmd/util/openapi",
     "pkg/kubectl/cmd/util/openapi/validation",
     "pkg/kubectl/scheme",
+    "pkg/kubectl/util/interrupt",
     "pkg/kubectl/util/logs",
     "pkg/kubectl/util/templates",
     "pkg/kubectl/util/term",
     "pkg/kubectl/validation",
-    "pkg/util/interrupt",
-    "pkg/version",
+    "pkg/kubectl/version",
   ]
   pruneopts = "UT"
-  revision = "a9f35a67c8386ad2fc43e1ca9587bd158d16129c"
+  revision = "9035196ed2aaada0d8c34709c6c69ac2c4bf6501"
 
 [[projects]]
   branch = "master"
