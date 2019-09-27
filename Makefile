@@ -1,9 +1,9 @@
-build: $(shell find cmd/kput -name '*.go') $(shell find vendor -name '*.go')
-	@CGO_ENABLED=0 go build -a -installsuffix cgo -o bin/kput ./cmd/kput
+build:
+	@GO111MODULE=on CGO_ENABLED=0 go build -a -installsuffix cgo -o bin/kput ./cmd/kput
 
 .PHONY: build-image
 build-image:
-	@docker run -v $(shell pwd):/go/src/app -w /go/src/app golang:1.12 make build
+	@docker run -v $(shell pwd):/go/src/app -v "$${GOPATH}/pkg/mod:/go/pkg/mod" -w /go/src/app golang:1.12 make build
 
 .PHONY: clean
 clean:
