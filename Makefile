@@ -12,12 +12,4 @@ clean:
 DOCKER_IMAGE=zlabjp/update-storage-objects
 .PHONY: docker-image
 docker-image:
-	@docker build -t $(DOCKER_IMAGE) .
-
-CONCOURSE_PROJECT=update-storage-objects
-.PHONY: set-pipeline
-set-pipeline:
-	@fly -t cs set-pipeline -p $(CONCOURSE_PROJECT) -c ci/pipeline.yml -l ci/credentials.yml
-
-ci/pipeline.yml: ci/pipeline.yml.erb
-	@erb -r date $< > $@
+	@DOCKER_BUILDKIT=1 docker build -t $(DOCKER_IMAGE) .
