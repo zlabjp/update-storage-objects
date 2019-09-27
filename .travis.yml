@@ -8,10 +8,10 @@ services:
 
 env:
   global:
-  - DEPLOY_CONDITION=v1.14.2 # Don't forget to update here to latest kube minor version
+  - DEPLOY_CONDITION=v1.15.3 # Don't forget to update here to latest kube minor version
   matrix:
-  - KUBE_VERSION=v1.14.2 NODE_TAG=v1.14.2@sha256:33539d830a6cf20e3e0a75d0c46a4e94730d78c7375435e6b49833d81448c319
-  - KUBE_VERSION=v1.13.6 NODE_TAG=v1.13.6@sha256:9e07014fb48c746deb98ec8aafd58c3918622eca6063e643c6e6d86c86e170b4
+  - KUBE_VERSION=v1.15.3
+  - KUBE_VERSION=v1.14.6
 
 script:
 - make docker-image
@@ -20,9 +20,9 @@ after_success:
 # Download and install kubectl
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 # Download and install kind
-- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.3.0/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
+- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.5.1/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
 # Create a new kubernetes cluster
-- kind create cluster --image="kindest/node:${NODE_TAG}"
+- kind create cluster --image="kindest/node:${KUBE_VERSION}"
 # Set KUBECONFIG environment variable
 - export KUBECONFIG="$(kind get kubeconfig-path)"
 # Show version and cluster-info
