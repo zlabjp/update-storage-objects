@@ -7,8 +7,9 @@ services:
 
 env:
   global:
-  - DEPLOY_CONDITION=v1.15.3 # Don't forget to update here to latest kube minor version
+  - DEPLOY_CONDITION=v1.16.1 # Don't forget to update here to latest kube minor version
   matrix:
+  - KUBE_VERSION=v1.16.1
   - KUBE_VERSION=v1.15.3
   - KUBE_VERSION=v1.14.6
 
