@@ -1,0 +1,15 @@
+diff --git a/cluster/update-storage-objects.sh b/cluster/update-storage-objects.sh
+index 0218526a66..d875fd12bb 100755
+--- a/cluster/update-storage-objects.sh
++++ b/cluster/update-storage-objects.sh
+@@ -43,6 +43,10 @@ declare -a resources=(
+     "persistentvolumes"
+     "persistentvolumeclaims"
+     "replicationcontrollers"
++    "replicasets.apps"
++    "deployments.apps"
++    "statefulsets.apps"
++    "daemonsets.apps"
+     "resourcequotas"
+     "secrets"
+     "services"
