@@ -20,7 +20,7 @@ update-storage-objects is a container image which contains patched `cluster/upda
 2. [`patches/60970.patch`](./patches/60970.patch): Use [`kput` command](./cmd/kput) for updating existing objects instead of `kubectl replace` command. (https://github.com/kubernetes/kubernetes/issues/60970)
     - `kput` command just updates existing objects. Even if the `kubectl.kubernetes.io/last-applied-configuration` annotation existed, `kput` command keeps it as it is.
 3. [`patches/add-skip-error-option.patch`](./patches/add-skip-error-option.patch): Add a option to skip errors in case of failing get or replace objects. This feature is available when set `SKIP_UPDATE_OBJECT_ERROR` environment variable with any values.
-4. [`patches/add_apps_resource.patch`](./patches/add_apps_resource.patch): Add apps resources(deployments, daemonsets, statefulsets, replicasets) to target resources list for stroage version migration.
+4. [`patches/add_apps_resources.patch`](./patches/add_apps_resources.patch): Add apps resources(deployments, daemonsets, statefulsets, replicasets) to target resources list for stroage version migration.
 
 ## How to use this image
 
