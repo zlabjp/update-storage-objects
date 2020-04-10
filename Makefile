@@ -3,7 +3,7 @@ build:
 
 .PHONY: build-image
 build-image:
-	@docker run -v $(shell pwd):/go/src/app -v "$${GOPATH}/pkg/mod:/go/pkg/mod" -w /go/src/app golang:1.12 make build
+	@docker run -v $(shell pwd):/go/src/app -v "$${GOPATH}/pkg/mod:/go/pkg/mod" -w /go/src/app golang:1.13 make build
 
 .PHONY: clean
 clean:
