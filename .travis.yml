@@ -7,11 +7,11 @@ services:
 
 env:
   global:
-  - DEPLOY_CONDITION=v1.17.0 # Don't forget to update here to latest kube minor version
+  - DEPLOY_CONDITION=v1.18.0 # Don't forget to update here to latest kube minor version
   matrix:
+  - KUBE_VERSION=v1.18.0
   - KUBE_VERSION=v1.17.0
   - KUBE_VERSION=v1.16.4
-  - KUBE_VERSION=v1.15.7
 
 before_script:
 # https://github.com/rootless-containers/usernetes/blob/master/.travis.yml
@@ -31,7 +31,7 @@ after_success:
 # Download and install kubectl
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 # Download and install kind
-- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.6.1/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
+- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
 # Create a new kubernetes cluster
 - kind create cluster --image="kindest/node:${KUBE_VERSION}"
 # Set KUBECONFIG environment variable
