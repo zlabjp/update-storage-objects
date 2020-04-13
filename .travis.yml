@@ -37,7 +37,7 @@ after_success:
 # Show version and cluster-info
 - kubectl version && kubectl cluster-info
 # Run update-storage-objects
-- docker run -v ${HOME}/.kube:${HOME}/.kube -e SKIP_UPDATE_OBJECT_ERROR=1 --network host zlabjp/update-storage-objects:latest
+- docker run -v ${HOME}/.kube:${HOME}/.kube -e HOME -e SKIP_UPDATE_OBJECT_ERROR=1 --network host zlabjp/update-storage-objects:latest
 
 deploy:
   provider: script
