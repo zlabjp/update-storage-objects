@@ -2,7 +2,7 @@ ARG DEBIAN_BASE_VERSION=1.0.0
 
 FROM k8s.gcr.io/debian-base-amd64:${DEBIAN_BASE_VERSION} AS stage-0
 ENV USO_KUBE_VERSION=v1.16.0
-ENV KUBECTL_VERSION=v1.17.0
+ENV KUBECTL_VERSION=v1.18.1
 RUN set -ex && \
     apt-get update && \
     apt-get install -y curl git patch
@@ -30,7 +30,7 @@ RUN set -ex && \
     for file in $(ls -d /patches/*); do patch -p1 <$file; done && \
     git diff
 
-FROM golang:1.12 AS kput
+FROM golang:1.13 AS kput
 COPY . /go/src/app/
 RUN set -ex && \
     cd /go/src/app && \
