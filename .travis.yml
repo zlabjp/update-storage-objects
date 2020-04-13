@@ -34,12 +34,10 @@ after_success:
 - curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
 # Create a new kubernetes cluster
 - kind create cluster --image="kindest/node:${KUBE_VERSION}"
-# Set KUBECONFIG environment variable
-- export KUBECONFIG="$(kind get kubeconfig-path)"
 # Show version and cluster-info
 - kubectl version && kubectl cluster-info
 # Run update-storage-objects
-- docker run -v ${HOME}/.kube:${HOME}/.kube -e KUBECONFIG -e SKIP_UPDATE_OBJECT_ERROR=1 --network host zlabjp/update-storage-objects:latest
+- docker run -v ${HOME}/.kube:${HOME}/.kube -e SKIP_UPDATE_OBJECT_ERROR=1 --network host zlabjp/update-storage-objects:latest
 
 deploy:
   provider: script
